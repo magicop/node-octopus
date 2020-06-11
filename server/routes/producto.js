@@ -18,9 +18,8 @@ app.get('/productos', (req, res) => {
     let desde = req.query.desde || 0;
     desde = Number(desde);
 
-    Producto.find({ activo: true })
+    Producto.find()
         .skip(desde)
-        .limit(5)
         .populate('producto', 'titulo')
         .exec((err, productoDB) => {
 
@@ -39,7 +38,7 @@ app.get('/productos', (req, res) => {
             }
 
             res.json({
-                ok: true,
+                /*ok: true,*/
                 productoDB
             });
 
@@ -154,7 +153,7 @@ app.post('/productos', (req, res) => {
 // ===========================
 //  Actualizar un producto
 // ===========================
-app.put('/productos/:id', verificaToken, (req, res) => {
+app.put('/productos/:id', (req, res) => {
     // grabar el usuario
     // grabar una categoria del listado 
 
@@ -209,7 +208,7 @@ app.put('/productos/:id', verificaToken, (req, res) => {
 // ===========================
 //  Borrar un producto
 // ===========================
-app.delete('/productos/:id', verificaToken, (req, res) => {
+app.delete('/producto/:id', (req, res) => {
 
     let id = req.params.id;
 
@@ -231,7 +230,7 @@ app.delete('/productos/:id', verificaToken, (req, res) => {
             });
         }
 
-        productoDB.disponible = false;
+        productoDB.activo = false;
 
         productoDB.save((err, productoBorrado) => {
 
@@ -246,6 +245,55 @@ app.delete('/productos/:id', verificaToken, (req, res) => {
                 ok: true,
                 producto: productoBorrado,
                 mensaje: 'Producto borrado'
+            });
+
+        })
+
+    })
+
+
+});
+
+// ===========================
+//  Activar un producto
+// ===========================
+app.delete('/activarProd/:id', (req, res) => {
+
+    let id = req.params.id;
+
+    Producto.findById(id, (err, productoDB) => {
+
+        if (err) {
+            return res.status(500).json({
+                ok: false,
+                err
+            });
+        }
+
+        if (!productoDB) {
+            return res.status(400).json({
+                ok: false,
+                err: {
+                    message: 'ID no existe'
+                }
+            });
+        }
+
+        productoDB.activo = true;
+
+        productoDB.save((err, productoBorrado) => {
+
+            if (err) {
+                return res.status(500).json({
+                    ok: false,
+                    err
+                });
+            }
+
+            res.json({
+                ok: true,
+                producto: productoBorrado,
+                mensaje: 'Producto activado'
             });
 
         })
