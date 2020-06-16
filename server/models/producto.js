@@ -6,7 +6,7 @@ var productoSchema = new Schema({
     titulo: { type: String, required: [true, 'El titulo es necesario'] },
     descripcion: { type: String, required: [true, 'La descripcion únitario es necesaria'] },
     url: { type: String, required: [true, 'El url es necesario'] },
-    img: { type: String, required: false },
+    img: { type: String, required: true },
     activo: { type: Boolean, required: true, default: true },
 });
 
